@@ -43,9 +43,9 @@ ZMK_HOLD_TAP(sc_fast, bindings = <&kp>, <&kp>; flavor = "tap-preferred";
 // through &kp -- the outer modifier is dropped. Workaround: bake the full
 // modifier combo into a macro so the keycode is fixed at compile time.
 ZMK_MACRO(paste_plain,
-          bindings = <&macro_press &kp LSHFT &kp LGUI>,
+          bindings = <&macro_press &kp RSHFT &kp LGUI>,
                      <&macro_tap &kp V>,
-                     <&macro_release &kp LGUI &kp LSHFT>;
+                     <&macro_release &kp LGUI &kp RSHFT>;
           wait-ms = <40>;
           tap-ms = <40>;)
 
