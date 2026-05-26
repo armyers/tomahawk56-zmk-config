@@ -39,13 +39,13 @@ ZMK_HOLD_TAP(sc, bindings = <&kp>, <&kp>; flavor = "tap-preferred";
 ZMK_HOLD_TAP(sc_fast, bindings = <&kp>, <&kp>; flavor = "tap-preferred";
              tapping-term-ms = <175>; quick-tap-ms = <QUICK_TAP_MS>;)
 
-// ZMK hold-tap doesn't reliably pass nested-modifier params (e.g. LS(LG(V)))
-// through &kp -- the outer modifier is dropped. Workaround: bake the full
-// modifier combo into a macro so the keycode is fixed at compile time.
+// Paste-from-Pastebot shortcut. Pastebot's hotkey is Ctrl+Shift+V on this
+// machine (matches the kanata config's `C-S-v`), NOT the macOS-standard
+// Cmd+Shift+V. Built as a macro so the modifier set is fixed at compile time.
 ZMK_MACRO(paste_plain,
-          bindings = <&macro_press &kp RSHFT &kp LGUI>,
+          bindings = <&macro_press &kp LCTRL &kp LSHFT>,
                      <&macro_tap &kp V>,
-                     <&macro_release &kp LGUI &kp RSHFT>;
+                     <&macro_release &kp LSHFT &kp LCTRL>;
           wait-ms = <40>;
           tap-ms = <40>;)
 
