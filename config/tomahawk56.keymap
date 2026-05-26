@@ -33,7 +33,7 @@ MAKE_HRM(hmr, &kp, &kp, KEYS_L THUMBS) // Right-hand HRMs (trigger from left + t
 // gives kanata-like "tap by default, double-tap-hold repeats via OS auto-repeat".
 // Use at call site: &sc LG(C) C  -> tap=C, hold=Cmd+C.
 ZMK_HOLD_TAP(sc, bindings = <&kp>, <&kp>; flavor = "tap-preferred";
-             tapping-term-ms = <215>; quick-tap-ms = <QUICK_TAP_MS>;)
+             tapping-term-ms = <175>; quick-tap-ms = <QUICK_TAP_MS>;)
 
 // Faster variant for launcher-style shortcuts (matches kanata shortcut-tap/hold).
 ZMK_HOLD_TAP(sc_fast, bindings = <&kp>, <&kp>; flavor = "tap-preferred";
@@ -46,7 +46,7 @@ ZMK_MACRO(paste_plain, bindings = <&kp LS(LG(V))>; wait-ms = <0>; tap-ms = <5>;)
 
 // Hold-tap variant of sc with the hold hardcoded to paste-plain.
 ZMK_HOLD_TAP(sc_v, bindings = <&paste_plain>, <&kp>; flavor = "tap-preferred";
-             tapping-term-ms = <215>; quick-tap-ms = <QUICK_TAP_MS>;)
+             tapping-term-ms = <175>; quick-tap-ms = <QUICK_TAP_MS>;)
 
 /*
  * Assign the cs-gpios pin to 4.
