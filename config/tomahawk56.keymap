@@ -61,6 +61,28 @@ ZMK_HOLD_TAP(sc_v, bindings = <&paste_plain>, <&kp>; flavor = "tap-preferred";
 };
 
 / {
+    // Combos that activate the sys layer (layer 3). Each combo lives on a single
+    // half so the central can process it even if the peripheral is briefly out
+    // (and so the bootloader/reset keys on the sys layer land on real physical
+    // positions, ensuring &bootloader and &sys_reset route to the intended half).
+    combos {
+        compatible = "zmk,combos";
+
+        combo_sys_left {
+            timeout-ms = <50>;
+            key-positions = <36 50>;  // LSHFT + LWR
+            bindings = <&mo 3>;
+            require-prior-idle-ms = <500>;
+        };
+
+        combo_sys_right {
+            timeout-ms = <50>;
+            key-positions = <47 53>;  // RSHFT + RSE
+            bindings = <&mo 3>;
+            require-prior-idle-ms = <500>;
+        };
+    };
+
     keymap {
         compatible = "zmk,keymap";
 
@@ -126,7 +148,28 @@ ZMK_HOLD_TAP(sc_v, bindings = <&paste_plain>, <&kp>; flavor = "tap-preferred";
             sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
         };
 
-        extra_1 { status = "reserved"; };
+        sys_layer {
+// ------------------------------------------------------------------------------------------------------------
+// |       |     |     |     |RESET| BOOT |            | BOOT |RESET|     |     |     |       |
+// |       |     |     |     |     |      |            |      |     |     |     |     |       |
+// |       |     |     |     |     |      |            |      |     |     |     |     |       |
+// |       |     |     |     |     |      |            |      |     |     |     |     |       |
+//                     |     |     |      |            |      |     |     |     |
+//
+// Reached by holding LSHFT+LWR (left) or RSHFT+RSE (right). Once on this layer:
+//   N4 -> sys_reset LEFT     N5 -> bootloader LEFT
+//   N6 -> bootloader RIGHT   N7 -> sys_reset RIGHT
+// &bootloader and &sys_reset route to the half the physical key lives on.
+
+            display-name = "Sys";
+            bindings = <
+&trans  &trans  &trans  &trans  &sys_reset  &bootloader            &bootloader  &sys_reset  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans      &trans                 &trans       &trans      &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans      &trans                 &trans       &trans      &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans      &trans                 &trans       &trans      &trans  &trans  &trans  &trans
+                &trans  &trans  &trans      &trans                 &trans       &trans      &trans  &trans
+            >;
+        };
 
         extra_2 { status = "reserved"; };
 
