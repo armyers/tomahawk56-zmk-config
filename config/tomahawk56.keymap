@@ -212,22 +212,6 @@ ZMK_MOD_MORPH(ctl_bspc, bindings = <&kp BSPC>, <&kp LC(D)>;
             require-prior-idle-ms = <500>;
         };
 
-        // Brackets on base layer via combos. &kp sends the keycode with the
-        // currently-held modifier state, so holding Shift yields { / } and
-        // holding Cmd yields Cmd+[ / Cmd+] (Slack history nav) automatically.
-        combo_lbkt {
-            timeout-ms = <40>;
-            key-positions = <RH_C3_R3 RH_C4_R3>;  // I + O
-            bindings = <&kp LBKT>;
-            require-prior-idle-ms = <100>;
-        };
-
-        combo_rbkt {
-            timeout-ms = <40>;
-            key-positions = <RH_C3_R1 RH_C4_R1>;  // COMMA + DOT
-            bindings = <&kp RBKT>;
-            require-prior-idle-ms = <100>;
-        };
     };
 
     keymap {
