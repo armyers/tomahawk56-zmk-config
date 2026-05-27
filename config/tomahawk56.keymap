@@ -109,6 +109,12 @@
 
 #define QUICK_TAP_MS 175
 
+// Layer indices.
+#define BASE 0
+#define NUM  1
+#define NAV  2
+#define SYS  3
+
 // Home-row mods (urob-style): balanced flavor + opposite-hand positional trigger
 // + hold-trigger-on-release + prior-idle gate. Mirrors the kanata setup.
 #define MAKE_HRM(NAME, HOLD, TAP, TRIGGER_POS)                                 \
@@ -149,6 +155,29 @@ ZMK_MACRO(paste_plain,
 ZMK_HOLD_TAP(sc_v, bindings = <&paste_plain>, <&kp>; flavor = "tap-preferred";
              tapping-term-ms = <175>; quick-tap-ms = <QUICK_TAP_MS>;)
 
+// Grave/tilde/caps key: tap = `, shift+tap = ~ (via shift flow-through from
+// an HRM or modifier held during the tap), hold = Caps Lock toggle. Replaces
+// &gresc at LH_C6_R4.
+ZMK_HOLD_TAP(caps_grave, bindings = <&kp>, <&kp>; flavor = "tap-preferred";
+             tapping-term-ms = <200>; quick-tap-ms = <QUICK_TAP_MS>;)
+
+// Smart layer-tap: hold = momentary layer (active while held), 1-tap = return
+// to base layer (&to BASE), 2-tap = persistent layer activation (&to LAYER).
+// Hold-tap whose tap is a tap-dance to disambiguate single vs double tap.
+ZMK_TAP_DANCE(td_num, bindings = <&to BASE>, <&to NUM>; tapping-term-ms = <200>;)
+ZMK_HOLD_TAP(smart_num, bindings = <&mo>, <&td_num>; flavor = "tap-preferred";
+             tapping-term-ms = <200>; quick-tap-ms = <QUICK_TAP_MS>;)
+
+ZMK_TAP_DANCE(td_nav, bindings = <&to BASE>, <&to NAV>; tapping-term-ms = <200>;)
+ZMK_HOLD_TAP(smart_nav, bindings = <&mo>, <&td_nav>; flavor = "tap-preferred";
+             tapping-term-ms = <200>; quick-tap-ms = <QUICK_TAP_MS>;)
+
+// Backspace with Ctrl-morph: tap = BSPC, Ctrl+tap = Ctrl+D (forward-char delete
+// on macOS). The HRM on `a` provides the Ctrl side; ZMK queues the BSPC press
+// until the HRM decides, so the morph sees Ctrl active.
+ZMK_MOD_MORPH(ctl_bspc, bindings = <&kp BSPC>, <&kp LC(D)>;
+              mods = <(MOD_LCTL|MOD_RCTL)>;)
+
 /*
  * Assign the cs-gpios pin to 4.
  * Uncomment these next few lines if implementing nice!view Displays
@@ -171,15 +200,15 @@ ZMK_HOLD_TAP(sc_v, bindings = <&paste_plain>, <&kp>; flavor = "tap-preferred";
 
         combo_sys_left {
             timeout-ms = <50>;
-            key-positions = <LH_C6_R1 LH_T2>;  // LSHFT + LOWER
-            bindings = <&mo 3>;
+            key-positions = <LH_T1 LH_C5_R1 LH_C1_R4>;  // SPACE + Z + N5
+            bindings = <&mo SYS>;
             require-prior-idle-ms = <500>;
         };
 
         combo_sys_right {
             timeout-ms = <50>;
-            key-positions = <RH_C6_R1 RH_T2>;  // RSHFT + RAISE
-            bindings = <&mo 3>;
+            key-positions = <RH_T1 RH_C5_R1 RH_C1_R4>;  // SPACE + / + N6
+            bindings = <&mo SYS>;
             require-prior-idle-ms = <500>;
         };
 
@@ -206,61 +235,70 @@ ZMK_HOLD_TAP(sc_v, bindings = <&paste_plain>, <&kp>; flavor = "tap-preferred";
 
         default_layer {
 // ------------------------------------------------------------------------------------------------------------
-// |  ESC  |  1  |  2   |  3   |  4   |  5   |            |  6   |  7    |  8    |  9   |   0   | BSPC  |
+// | grv*  |  1  |  2   |  3   |  4   |  5   |            |  6   |  7    |  8    |  9   |   0   | BSPC  |
 // |  TAB  |  Q  |  W   |  E   |  R   |  T*  |            |  Y   |  U*   |  I    |  O   |   P   |   -   |
 // |  ESC  |CTL/A|SFT/S |CMD/D |ALT/F |  G   |            |  H   |ALT/J  |CMD/K  |SFT/L |CTL/;  |   '   |
-// | SHIFT |  Z  |  X*  |  C*  |  V*  |  B   |            |  N   |  M    |  ,    |  .   |   /   | SHIFT |
-//               | CTRL | CMD  |LOWER |SPACE |            |ENTER |RAISE  |  CMD  | OPT  |
+// |  [    |  Z  |  X*  |  C*  |  V*  |  B   |            |  N   |  M    |  ,    |  .   |   /   |  ]    |
+//               | NUM  | NUM  | ENT  |SPACE |            |SPACE | ENT   |  NAV  | NAV  |
 //
 // Holds: T*/U* -> Ctrl-Space; X* -> Cmd-X; C* -> Cmd-C; V* -> Cmd-Shift-V.
+//        grv*  -> tap = `, shift+tap = ~, hold = Caps Lock.
+//        NUM   -> hold momentary; 1-tap = back to base; 2-tap = toggle persistent.
+//        NAV   -> same pattern for nav layer.
 
             display-name = "Base";
             bindings = <
-&gresc          &kp N1       &kp N2            &kp N3            &kp N4         &kp N5                  &kp N6  &kp N7                &kp N8             &kp N9         &kp N0           &kp BSPC
-&kp TAB         &kp Q        &kp W             &kp E             &kp R          &sc_launcher 0 T        &kp Y   &sc_launcher 0 U      &kp I              &kp O          &kp P            &kp MINUS
-&kp ESC         &hml LCTRL A &hml LSHFT S      &hml LGUI D       &hml LALT F    &kp G                   &kp H   &hmr RALT J           &hmr RGUI K        &hmr RSHFT L   &hmr RCTRL SEMI  &kp SQT
-&kp LEFT_SHIFT  &kp Z        &sc LG(X) X       &sc LG(C) C       &sc_v 0 V      &kp B                   &kp N   &kp M                 &kp COMMA          &kp DOT        &kp FSLH         &kp RSHFT
-                             &kp LEFT_CONTROL  &kp LEFT_COMMAND  &mo 1          &kp SPACE               &kp RET &mo 2                 &kp RIGHT_COMMAND  &kp RIGHT_ALT
+&caps_grave CAPS GRAVE  &kp N1        &kp N2            &kp N3            &kp N4         &kp N5                  &kp N6     &kp N7                &kp N8             &kp N9            &kp N0           &ctl_bspc
+&kp TAB                 &kp Q         &kp W             &kp E             &kp R          &sc_launcher 0 T        &kp Y      &sc_launcher 0 U      &kp I              &kp O             &kp P            &kp MINUS
+&kp ESC                 &hml LCTRL A  &hml LSHFT S      &hml LGUI D       &hml LALT F    &kp G                   &kp H      &hmr RALT J           &hmr RGUI K        &hmr RSHFT L      &hmr RCTRL SEMI  &kp SQT
+&kp LBKT                &kp Z         &sc LG(X) X       &sc LG(C) C       &sc_v 0 V      &kp B                   &kp N      &kp M                 &kp COMMA          &kp DOT           &kp FSLH         &kp RBKT
+                                      &smart_num NUM 0  &smart_num NUM 0  &kp RET        &kp SPACE               &kp SPACE  &kp RET               &smart_nav NAV 0   &smart_nav NAV 0
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
         };
 
-        lower_layer {
+        num_layer {
 // ------------------------------------------------------------------------------------------------------------
-// | BTCLR | BT1 | BT2 |  BT3 |  BT4 |  BT5 |            |  UG  |  UG   |  UG   |  UG  |  UG   |  UG   |
-// |  F1   |  F2 |  F3 |  F4  |  F5  |  F6  |            |      |  UG   |  UG   |  UG  |  UG   |  UG   |
-// |   `   |  !  |  @  |  #   |  $   |  %   |            |  ^   |  &    |  *    |  (   |   )   |   ~   |
-// |       |     |     |      |  [   |  ]   |            |      |  _    |  +    |  {   |   }   |  "|"  |
-//                     |      |      |      |            |      |       |       |
+// |  F1   | F2  | F3  | F4   | F5   | F6   |            | F7   | F8    | F9    | F10  |  F11  |  F12  |
+// |       |     |VOL+ |BRI+  |      |      |            |      |  KP7  |  KP8  | KP9  |  KP/  |  KP*  |
+// |       |CTL/A|SFT/S|CMD/D |ALT/F |      |            |  KP0 |  KP4  |  KP5  | KP6  |  KP-  |  KP+  |
+// |       |     |VOL- |BRI-  |      |      |            |      |  KP1  |  KP2  | KP3  |  KP.  |  KP=  |
+//               |     |      |      |      |            |      |       |       |      |
+//
+// Held via LH thumb (NUM key). LH HRMs stay live (trans falls through to base).
+// RH = full numpad.
 
-            display-name = "Lower";
+            display-name = "Num";
             bindings = <
-&bt BT_CLR  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4         &rgb_ug RGB_TOG  &rgb_ug RGB_HUI  &rgb_ug RGB_SAI  &rgb_ug RGB_BRI  &rgb_ug RGB_SPI  &rgb_ug RGB_EFF
-&trans      &trans        &trans        &trans        &trans        &trans               &trans           &rgb_ug RGB_HUD  &rgb_ug RGB_SAD  &rgb_ug RGB_BRD  &rgb_ug RGB_SPD  &rgb_ug RGB_EFR
-&kp GRAVE   &kp EXCL      &kp AT        &kp HASH      &kp DOLLAR    &kp PRCNT            &kp CARET  &kp AMPS   &kp KP_MULTIPLY  &kp LPAR  &kp RPAR  &kp TILDE
-&trans      &trans        &trans        &trans        &kp LBKT      &kp RBKT             &trans     &kp MINUS  &kp KP_PLUS      &kp LBRC  &kp RBRC  &kp PIPE
-                          &trans        &trans        &trans        &trans               &trans  &trans     &trans     &trans
+&kp F1   &kp F2   &kp F3        &kp F4        &kp F5   &kp F6         &kp F7      &kp F8         &kp F9         &kp F10        &kp F11           &kp F12
+&trans   &trans   &kp C_VOL_UP  &kp C_BRI_UP  &trans   &trans         &trans      &kp KP_N7      &kp KP_N8      &kp KP_N9      &kp KP_SLASH      &kp KP_ASTERISK
+&trans   &trans   &trans        &trans        &trans   &trans         &kp KP_N0   &kp KP_N4      &kp KP_N5      &kp KP_N6      &kp KP_MINUS      &kp KP_PLUS
+&trans   &trans   &kp C_VOL_DN  &kp C_BRI_DN  &trans   &trans         &trans      &kp KP_N1      &kp KP_N2      &kp KP_N3      &kp KP_DOT        &kp KP_EQUAL
+                  &trans        &trans        &trans   &trans         &trans      &trans         &trans         &trans
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
         };
 
-        raise_layer {
+        nav_layer {
 // ------------------------------------------------------------------------------------------------------------
-// |       |     |     |      |      |      |            |      |       |       |      |       |       |
-// |   `   |  1  |  2  |  3   |  4   |  5   |            |  6   |   7   |   8   |  9   |   0   |       |
-// |   F1  |  F2 |  F3 |  F4  |  F5  |  F6  |            |      |   <-  |   v   |  ^   |  ->   |       |
-// |   F7  |  F8 |  F9 |  F10 |  F11 |  F12 |            |  +   |   -   |   =   |  [   |   ]   |   \   |
-//                     |      |      |      |            |      |       |       |
+// |  F1   | F2  | F3  | F4   | F5   | F6   |            | F7   | F8    | F9    | F10  |  F11  |  F12  |
+// |       |     |VOL+ |BRI+  |      |      |            | HOME | PG_DN | PG_UP | END  |       |       |
+// |       |CTL/A|SFT/S|CMD/D |ALT/F |      |            |  <-  |   v   |   ^   |  ->  |       |       |
+// |       |     |VOL- |BRI-  |      |      |            |      |       |       |      |       |       |
+//               |     |      |      |      |            |      |       |       |      |
+//
+// Held via RH thumb (NAV key). LH HRMs stay live; RH HRMs overridden so
+// HJKL = LEFT DOWN UP RIGHT directly. Page nav above arrows.
 
-            display-name = "Raise";
+            display-name = "Nav";
             bindings = <
-&trans     &kp F1    &kp F2    &kp F3     &kp F4  &kp F5            &kp F6       &kp F7     &kp F8     &kp F9    &kp F10   &trans
-&kp GRAVE  &trans    &kp UP    &trans     &trans  &trans            &trans       &kp UP     &trans     &trans    &trans    &trans
-&trans     &kp LEFT  &kp DOWN  &kp RIGHT  &trans  &trans            &kp LEFT     &kp DOWN   &kp RIGHT  &trans    &trans    &trans
-&trans     &trans    &trans    &trans     &trans  &trans            &kp KP_PLUS  &kp MINUS  &kp EQUAL  &kp LBKT  &kp RBKT  &kp BSLH
-                     &trans    &trans     &trans  &trans            &trans       &trans     &trans     &trans
+&kp F1   &kp F2   &kp F3        &kp F4        &kp F5  &kp F6        &kp F7      &kp F8       &kp F9       &kp F10       &kp F11   &kp F12
+&trans   &trans   &kp C_VOL_UP  &kp C_BRI_UP  &trans  &trans        &kp HOME    &kp PG_DN    &kp PG_UP    &kp END       &trans    &trans
+&trans   &trans   &trans        &trans        &trans  &trans        &kp LEFT    &kp DOWN     &kp UP       &kp RIGHT     &trans    &trans
+&trans   &trans   &kp C_VOL_DN  &kp C_BRI_DN  &trans  &trans        &trans      &trans       &trans       &trans        &trans    &trans
+                  &trans        &trans        &trans  &trans        &trans      &trans       &trans       &trans
             >;
 
             sensor-bindings = <&inc_dec_kp C_VOL_UP C_VOL_DN>;
@@ -269,23 +307,24 @@ ZMK_HOLD_TAP(sc_v, bindings = <&paste_plain>, <&kp>; flavor = "tap-preferred";
         sys_layer {
 // ------------------------------------------------------------------------------------------------------------
 // |       |     |     |     |RESET| BOOT |            | BOOT |RESET|     |     |     |       |
-// |       |     |     |     |     |      |            |      |     |     |     |     |       |
-// |       |     |     |     |     |      |            |      |     |     |     |     |       |
+// | BTCLR | BT0 | BT1 | BT2 | BT3 | BT4  |            |UG_TOG|UG_H+|UG_S+|UG_B+|UG_P+| UG_E+ |
+// |       |     |     |     |     |      |            |      |UG_H-|UG_S-|UG_B-|UG_P-| UG_E- |
 // |       |     |     |     |     |      |            |      |     |     |     |     |       |
 //                     |     |     |      |            |      |     |     |     |
 //
-// Reached by holding LSHFT+LWR (left) or RSHFT+RSE (right). Once on this layer:
-//   N4 -> sys_reset LEFT     N5 -> bootloader LEFT
-//   N6 -> bootloader RIGHT   N7 -> sys_reset RIGHT
-// &bootloader and &sys_reset route to the half the physical key lives on.
+// Reached via 3-key combos:
+//   left:  SPACE + Z + N5   (LH_T1 + LH_C5_R1 + LH_C1_R4)
+//   right: SPACE + / + N6   (RH_T1 + RH_C5_R1 + RH_C1_R4)
+// N4/N5 -> sys_reset/bootloader LEFT; N6/N7 -> bootloader/sys_reset RIGHT.
+// LH row 3 = bluetooth controls; RH rows 2-3 = RGB underglow controls.
 
             display-name = "Sys";
             bindings = <
-&trans  &trans  &trans  &trans  &sys_reset  &bootloader            &bootloader  &sys_reset  &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans      &trans                 &trans       &trans      &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans      &trans                 &trans       &trans      &trans  &trans  &trans  &trans
-&trans  &trans  &trans  &trans  &trans      &trans                 &trans       &trans      &trans  &trans  &trans  &trans
-                &trans  &trans  &trans      &trans                 &trans       &trans      &trans  &trans
+&trans       &trans         &trans         &trans         &sys_reset      &bootloader        &bootloader      &sys_reset       &trans           &trans           &trans           &trans
+&bt BT_CLR   &bt BT_SEL 0   &bt BT_SEL 1   &bt BT_SEL 2   &bt BT_SEL 3    &bt BT_SEL 4       &rgb_ug RGB_TOG  &rgb_ug RGB_HUI  &rgb_ug RGB_SAI  &rgb_ug RGB_BRI  &rgb_ug RGB_SPI  &rgb_ug RGB_EFF
+&trans       &trans         &trans         &trans         &trans          &trans             &trans           &rgb_ug RGB_HUD  &rgb_ug RGB_SAD  &rgb_ug RGB_BRD  &rgb_ug RGB_SPD  &rgb_ug RGB_EFR
+&trans       &trans         &trans         &trans         &trans          &trans             &trans           &trans           &trans           &trans           &trans           &trans
+                            &trans         &trans         &trans          &trans             &trans           &trans           &trans           &trans
             >;
         };
 
