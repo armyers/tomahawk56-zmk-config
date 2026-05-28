@@ -199,16 +199,21 @@ ZMK_MOD_MORPH(ctl_bspc, bindings = <&kp BSPC>, <&kp LC(D)>;
     combos {
         compatible = "zmk,combos";
 
+        // 2-key combo activates the sys layer; the bootloader/sys_reset
+        // keys (N4-N7 on the sys layer) are then pressed as a separate keystroke.
+        // Matches the original b78ffee design intent -- 2 keys to coordinate
+        // within the combo window, then a third deliberate key press for the
+        // actual reset/bootloader action.
         combo_sys_left {
             timeout-ms = <300>;
-            key-positions = <LH_T1 LH_C5_R1 LH_C1_R4>;  // SPACE + Z + N5
+            key-positions = <LH_T1 LH_C5_R1>;  // SPACE + Z
             bindings = <&mo SYS>;
             require-prior-idle-ms = <500>;
         };
 
         combo_sys_right {
             timeout-ms = <300>;
-            key-positions = <RH_T1 RH_C5_R1 RH_C1_R4>;  // SPACE + / + N6
+            key-positions = <RH_T1 RH_C5_R1>;  // SPACE + /
             bindings = <&mo SYS>;
             require-prior-idle-ms = <500>;
         };
@@ -297,10 +302,12 @@ ZMK_MOD_MORPH(ctl_bspc, bindings = <&kp BSPC>, <&kp LC(D)>;
 // |       |     |     |     |     |      |            |      |     |     |     |     |       |
 //                     |     |     |      |            |      |     |     |     |
 //
-// Reached via 3-key combos:
-//   left:  SPACE + Z + N5   (LH_T1 + LH_C5_R1 + LH_C1_R4)
-//   right: SPACE + / + N6   (RH_T1 + RH_C5_R1 + RH_C1_R4)
-// N4/N5 -> sys_reset/bootloader LEFT; N6/N7 -> bootloader/sys_reset RIGHT.
+// Reached via 2-key combos:
+//   left:  SPACE + Z   (LH_T1 + LH_C5_R1)
+//   right: SPACE + /   (RH_T1 + RH_C5_R1)
+// Then on this layer, press the appropriate number key:
+//   N4 -> sys_reset LEFT     N5 -> bootloader LEFT
+//   N6 -> bootloader RIGHT   N7 -> sys_reset RIGHT
 // LH row 3 = bluetooth controls; RH rows 2-3 = RGB underglow controls.
 
             display-name = "Sys";
