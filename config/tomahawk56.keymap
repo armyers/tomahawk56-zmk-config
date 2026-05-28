@@ -200,14 +200,14 @@ ZMK_MOD_MORPH(ctl_bspc, bindings = <&kp BSPC>, <&kp LC(D)>;
         compatible = "zmk,combos";
 
         combo_sys_left {
-            timeout-ms = <50>;
+            timeout-ms = <300>;
             key-positions = <LH_T1 LH_C5_R1 LH_C1_R4>;  // SPACE + Z + N5
             bindings = <&mo SYS>;
             require-prior-idle-ms = <500>;
         };
 
         combo_sys_right {
-            timeout-ms = <50>;
+            timeout-ms = <300>;
             key-positions = <RH_T1 RH_C5_R1 RH_C1_R4>;  // SPACE + / + N6
             bindings = <&mo SYS>;
             require-prior-idle-ms = <500>;
