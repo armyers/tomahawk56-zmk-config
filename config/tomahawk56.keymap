@@ -177,12 +177,12 @@ ZMK_HOLD_TAP(caps_grave, bindings = <&kp>, <&kp>; flavor = "tap-preferred";
 // to base layer (&to BASE), 2-tap = toggle persistent layer overlay (&tog).
 // Uses &tog for the persistent path because &to deactivates all other layers
 // including the base, which would break &trans fall-through on the LH side.
-ZMK_TAP_DANCE(td_num, bindings = <&to BASE>, <&tog NUM>; tapping-term-ms = <250>;)
-ZMK_HOLD_TAP(smart_num, bindings = <&mo>, <&td_num>; flavor = "tap-preferred";
+ZMK_TAP_DANCE(td_num, bindings = <&to BASE>, <&tog NUM>; tapping-term-ms = <350>;)
+ZMK_HOLD_TAP(smart_num, bindings = <&mo>, <&td_num>; flavor = "balanced";
              tapping-term-ms = <200>; quick-tap-ms = <QUICK_TAP_MS>;)
 
-ZMK_TAP_DANCE(td_nav, bindings = <&to BASE>, <&tog NAV>; tapping-term-ms = <250>;)
-ZMK_HOLD_TAP(smart_nav, bindings = <&mo>, <&td_nav>; flavor = "tap-preferred";
+ZMK_TAP_DANCE(td_nav, bindings = <&to BASE>, <&tog NAV>; tapping-term-ms = <350>;)
+ZMK_HOLD_TAP(smart_nav, bindings = <&mo>, <&td_nav>; flavor = "balanced";
              tapping-term-ms = <200>; quick-tap-ms = <QUICK_TAP_MS>;)
 
 // === HRM 2-key chords (kanata defchordsv2 equivalent) ===
